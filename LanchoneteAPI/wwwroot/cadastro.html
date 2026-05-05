@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Criar Conta</title>
+</head>
+<body>
+
+    <h2>Criar Conta</h2>
+
+    <input type="text" id="email" placeholder="Email"><br><br>
+    <input type="password" id="senha" placeholder="Senha"><br><br>
+
+    <button onclick="cadastrar()">Cadastrar</button>
+
+    <p>Já tem conta? <a href="login.html">Fazer login</a></p>
+
+    <script>
+        async function cadastrar() {
+            const email = document.getElementById("email").value;
+            const senha = document.getElementById("senha").value;
+
+            if (!email || !senha) {
+                alert("Preencha todos os campos");
+                return;
+            }
+
+            try {
+                const res = await fetch("https://localhost:7200/api/usuario", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        Email: email,
+                        Senha: senha,
+                        Perfil: "CLIENTE" // importante por causa do seu backend
+                    })
+                });
+
+                if (!res.ok) {
+                    const text = await res.text();
+                    console.error("Erro:", res.status, text);
+                    alert("Erro ao cadastrar");
+                    return;
+                }
+
+                alert("Conta criada com sucesso!");
+                window.location.href = "login.html";
+
+            } catch (erro) {
+                console.error("Erro:", erro);
+                alert("Erro ao conectar com a API");
+            }
+        }
+    </script>
+
+</body>
+</html>

@@ -76,9 +76,28 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddScoped<IPedidoService, PedidoService>();
 
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new()
+    {
+        Title = "API Lanchonete",
+        Version = "v1"
+    });
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+});
+
+
+
 var app = builder.Build();
 app.UseDefaultFiles();
 app.UseStaticFiles();
+
+app.UseCors("AllowAll");
 
 // Configuração
 if (app.Environment.IsDevelopment())

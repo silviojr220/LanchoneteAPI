@@ -43,4 +43,20 @@ public class PedidoService : IPedidoService
 
         return pedido;
     }
+
+    public async Task<List<Pedido>> GetAll()
+    {
+        return await _context.Pedidos
+            .Include(p => p.Itens)
+            .ThenInclude(i => i.Produto)
+            .ToListAsync();
+    }
+
+    public async Task<Pedido> GetById(int id)
+    {
+        return await _context.Pedidos
+            .Include(p => p.Itens)
+            .ThenInclude(i => i.Produto)
+            .FirstOrDefaultAsync(p => p.Id == id);
+    }
 }

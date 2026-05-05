@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+
+    <h2>Login</h2>
+
+    <input type="text" id="email" placeholder="Email">
+    <input type="password" id="senha" placeholder="Senha">
+
+    <button type="button" onclick="login()">Entrar</button>
+
+    <button onclick="logout()">Sair</button>
+
+    <script>
+        async function login() {
+
+            const token = localStorage.getItem("token");
+
+            if (token) {
+                window.location.href = "index.html";
+            }
+
+            const email = document.getElementById("email").value;
+            const senha = document.getElementById("senha").value;
+
+            if (!email || !senha) {
+                alert("Preencha email e senha");
+                return;
+            }
+
+            try {
+                const res = await fetch("https://localhost:7200/api/usuario/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        Email: email,
+                        Senha: senha
+                    })
+                });
+
+                if (!res.ok) {
+                    const text = await res.text();
+                    console.error("Erro:", res.status, text);
+                    alert("Login inválido");
+                    return;
+                }
+
+                const data = await res.json();
+                console.log(data);
+
+                const token = data.token;
+
+                if (!token) {
+                    alert("Token não veio na resposta!");
+                    return;
+                }
+
+                localStorage.setItem("token", token);
+                window.location.href = "index.html";
+
+            } catch (erro) {
+                console.error("Erro na requisição:", erro);
+                alert("Erro ao conectar com a API");
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+</html>

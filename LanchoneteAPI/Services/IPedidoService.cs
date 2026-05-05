@@ -6,4 +6,6 @@ using LanchoneteAPI.Models;
 public interface IPedidoService
 {
     Task<Pedido> CriarPedido(PedidoDTO dto);
+    Task<List<Pedido>> GetAll();
+    Task<Pedido> GetById(int id);
 }
