@@ -1,112 +1,72 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
+﻿using LanchoneteAPI.DTOs;
 using LanchoneteAPI.Services;
-using LanchoneteAPI.DTOs;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace LanchoneteAPI.Controllers
+[ApiController]
+[Route("api/[controller]")]
+[Authorize]
+public class PedidoController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class PedidoController : ControllerBase
+    private readonly IPedidoService _service;
+
+    public PedidoController(IPedidoService service)
     {
-        private readonly IPedidoService _service;
+        _service = service;
+    }
 
-        public PedidoController(IPedidoService service)
+    // POST: api/pedido
+    [HttpPost]
+    [Authorize(Roles = "CLIENTE")]
+    public async Task<IActionResult> CriarPedido([FromBody] PedidoDTO dto)
+    {
+        try
         {
-            _service = service;
+            if (dto == null || dto.Itens == null || !dto.Itens.Any())
+                return BadRequest(new { sucesso = false, mensagem = "Pedido deve conter pelo menos um item" });
+
+            var pedido = await _service.CriarPedido(dto);
+            return Ok(new { sucesso = true, dados = pedido });
         }
-
-        // POST: api/pedido
-        [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> CriarPedido([FromBody] PedidoDTO dto)
+        catch (Exception ex)
         {
-            try
-            {
-                if (dto == null || dto.Itens == null || !dto.Itens.Any())
-                {
-                    return BadRequest(new
-                    {
-                        sucesso = false,
-                        mensagem = "Pedido deve conter pelo menos um item"
-                    });
-                }
-
-                var pedido = await _service.CriarPedido(dto);
-
-                return Ok(new
-                {
-                    sucesso = true,
-                    dados = pedido
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    sucesso = false,
-                    erro = ex.Message
-                });
-            }
+            return BadRequest(new { sucesso = false, erro = ex.Message });
         }
+    }
 
-        // GET: api/pedido
-        [HttpGet]
-        [Authorize(Roles = "ADM")]
-        public async Task<IActionResult> GetTodos()
+    // GET: api/pedido (ADM)
+    [HttpGet]
+    [Authorize(Roles = "ADM")]
+    public async Task<IActionResult> GetTodos()
+    {
+        try
         {
-            try
-            {
-                var pedidos = await _service.GetAll();
-
-                return Ok(new
-                {
-                    sucesso = true,
-                    dados = pedidos
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    sucesso = false,
-                    erro = ex.Message
-                });
-            }
+            var pedidos = await _service.GetAll();
+            return Ok(new { sucesso = true, dados = pedidos });
         }
-
-        // GET: api/pedido/1
-        [HttpGet("{id}")]
-        [Authorize]
-        public async Task<IActionResult> GetById(int id)
+        catch (Exception ex)
         {
-            try
-            {
-                var pedido = await _service.GetById(id);
+            return BadRequest(new { sucesso = false, erro = ex.Message });
+        }
+    }
 
-                if (pedido == null)
-                {
-                    return NotFound(new
-                    {
-                        sucesso = false,
-                        mensagem = "Pedido não encontrado"
-                    });
-                }
+    // GET: api/pedido/1
+    [HttpGet("{id}")]
+    [Authorize(Roles = "ADM")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        try
+        {
+            var pedido = await _service.GetById(id);
 
-                return Ok(new
-                {
-                    sucesso = true,
-                    dados = pedido
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    sucesso = false,
-                    erro = ex.Message
-                });
-            }
+            if (pedido == null)
+                return NotFound(new { sucesso = false, mensagem = "Pedido não encontrado" });
+
+            return Ok(new { sucesso = true, dados = pedido });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { sucesso = false, erro = ex.Message });
         }
     }
 }

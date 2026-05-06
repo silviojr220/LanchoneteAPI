@@ -1,16 +1,14 @@
 ﻿const api = "https://localhost:7200/api";
 
 let carrinho = [];
+let produtosCache = [];
 
-// carregar produtos
 async function carregarProdutos() {
     try {
         const token = localStorage.getItem("token");
 
         const res = await fetch(`${api}/produto`, {
-            headers: token ? {
-                "Authorization": "Bearer " + token
-            } : {}
+            headers: token ? { "Authorization": "Bearer " + token } : {}
         });
 
         if (res.status === 401) {
@@ -20,71 +18,129 @@ async function carregarProdutos() {
         }
 
         if (!res.ok) {
-            console.error("Erro:", res.status);
             const text = await res.text();
-            console.error(text);
+            console.error("Erro:", res.status, text);
             return;
         }
 
         const data = await res.json();
-        console.log("Resposta produtos:", data);
-
-        const produtos = Array.isArray(data)
-            ? data
-            : data.dados || [];
+        const produtos = Array.isArray(data) ? data : data.dados || [];
+        produtosCache = produtos;
 
         const div = document.getElementById("produtos");
         div.innerHTML = "";
 
+        // 🔥 cria tudo em memória primeiro (performance melhor)
+        const fragment = document.createDocumentFragment();
+
         produtos.forEach(p => {
-            div.innerHTML += `
-                <div class="col-3">
-                    <div class="card p-2">
-                        <h5>${p.nome}</h5>
-                        <p>R$ ${Number(p.preco).toFixed(2)}</p>
-                        <button class="btn btn-primary" onclick="addCarrinho(${p.id})">
-                            Adicionar
+            const col = document.createElement("div");
+            col.className = "col-md-4 col-sm-6";
+
+            col.innerHTML = `
+                <div class="card h-100 produto-card">
+                    <div class="card-body d-flex flex-column">
+                        
+                        <h6 class="fw-bold">${p.nome}</h6>
+                        <small class="text-muted mb-2">${p.tipo}</small>
+
+                        <div class="price mb-3">
+                            R$ ${Number(p.preco).toFixed(2)}
+                        </div>
+
+                        <button class="btn btn-primary btn-sm mt-auto">
+                            + Adicionar
                         </button>
                     </div>
                 </div>
             `;
+
+            // 🔥 evita onclick inline (mais profissional)
+            col.querySelector("button").addEventListener("click", () => {
+                addCarrinho(p.id);
+            });
+
+            fragment.appendChild(col);
         });
+
+        div.appendChild(fragment);
 
     } catch (erro) {
         console.error("Erro na requisição:", erro);
     }
 }
 
-// adicionar ao carrinho
 function addCarrinho(id) {
+    const produto = produtosCache.find(p => p.id === id);
+
+    if (!produto) {
+        console.error("Produto não encontrado no cache");
+        return;
+    }
+
     const item = carrinho.find(i => i.produtoId === id);
 
     if (item) {
         item.quantidade++;
     } else {
-        carrinho.push({ produtoId: id, quantidade: 1 });
+        carrinho.push({
+            produtoId: id,
+            nome: produto.nome,
+            preco: produto.preco,
+            quantidade: 1
+        });
     }
 
     atualizarCarrinho();
 }
 
-// atualizar carrinho
 function atualizarCarrinho() {
     const ul = document.getElementById("carrinho");
+    const totalDiv = document.getElementById("total");
+
     ul.innerHTML = "";
 
-    carrinho.forEach(i => {
-        ul.innerHTML += `<li>Produto ${i.produtoId} - Qtd: ${i.quantidade}</li>`;
+    let total = 0;
+
+    if (carrinho.length === 0) {
+        ul.innerHTML = `<li class="list-group-item text-muted">Nenhum item</li>`;
+        totalDiv.innerHTML = "Total: R$ 0,00";
+        return;
+    }
+
+    carrinho.forEach((i, index) => {
+        const subtotal = i.preco * i.quantidade;
+        total += subtotal;
+
+        ul.innerHTML += `
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>${i.nome}</strong><br>
+                    <small>R$ ${i.preco.toFixed(2)}</small>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge badge-qtd">${i.quantidade}</span>
+                    <button class="btn btn-sm btn-outline-danger" onclick="removerItem(${index})">✕</button>
+                </div>
+            </li>
+        `;
     });
+
+    totalDiv.innerHTML = `Total: R$ ${total.toFixed(2)}`;
 }
 
-// finalizar pedido
 async function finalizarPedido() {
     const token = localStorage.getItem("token");
 
     if (!token) {
         alert("Você precisa fazer login!");
         window.location.href = "login.html";
+        return;
+    }
+
+    if (carrinho.length === 0) {
+        alert("Adicione itens ao carrinho antes de finalizar!");
         return;
     }
 
@@ -121,11 +177,15 @@ async function finalizarPedido() {
     }
 }
 
+function removerItem(index) {
+    carrinho.splice(index, 1);
+    atualizarCarrinho();
+}
+
 function logout() {
     localStorage.removeItem("token");
     alert("Você saiu do sistema");
     window.location.href = "login.html";
 }
 
-// inicializar
 carregarProdutos();

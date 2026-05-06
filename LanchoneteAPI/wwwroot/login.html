@@ -1,78 +1,180 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
+    <meta charset="UTF-8">
     <title>Login</title>
-</head>
-<body>
 
-    <h2>Login</h2>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <input type="text" id="email" placeholder="Email">
-    <input type="password" id="senha" placeholder="Senha">
+    <style>
+        :root {
+            --amarelo: #FFC107;
+            --amarelo-escuro: #ffb300;
+        }
 
-    <button type="button" onclick="login()">Entrar</button>
+        /* FUNDO */
+        body {
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(rgba(255,193,7,0.4), rgba(255,255,255,0.4)), url('https://images.unsplash.com/photo-1550547660-d9450f859349');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-    <button onclick="logout()">Sair</button>
+        /* CARD */
+        .login-box {
+            width: 360px;
+            padding: 40px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.6);
+            color: #333;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            animation: fadeIn 0.5s ease;
+        }
 
-    <script>
-        async function login() {
-
-            const token = localStorage.getItem("token");
-
-            if (token) {
-                window.location.href = "index.html";
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
             }
 
-            const email = document.getElementById("email").value;
-            const senha = document.getElementById("senha").value;
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-box h2 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        /* INPUT */
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+            .form-control:focus {
+                border-color: var(--amarelo);
+                box-shadow: 0 0 0 2px rgba(255,193,7,0.3);
+            }
+
+        /* SENHA */
+        .password-box {
+            position: relative;
+        }
+
+        .show-pass {
+            position: absolute;
+            right: 12px;
+            top: 10px;
+            cursor: pointer;
+        }
+
+        /* BOTÃO */
+        .btn-login {
+            background: var(--amarelo);
+            border: none;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+
+            .btn-login:hover {
+                background: var(--amarelo-escuro);
+                transform: scale(1.03);
+            }
+
+        /* LINKS */
+        .links {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+            .links a {
+                color: #555;
+                text-decoration: none;
+            }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-box">
+        <h2>Login</h2>
+
+        <input type="text" id="email" class="form-control mb-3" placeholder="Email">
+
+        <div class="password-box mb-3">
+            <input type="password" id="senha" class="form-control" placeholder="Senha">
+            <span class="show-pass" onclick="toggleSenha()">👁</span>
+        </div>
+
+        <button class="btn btn-login w-100" onclick="login()">Entrar</button>
+
+        <div class="links">
+            Não tem conta? <a href="cadastro.html">Criar conta</a>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="position-fixed bottom-0 end-0 p-3">
+        <div id="toast" class="toast text-bg-warning">
+            <div class="toast-body"></div>
+        </div>
+    </div>
+
+    <script>
+        function toast(msg) {
+            const t = document.getElementById("toast");
+            t.querySelector(".toast-body").innerText = msg;
+            new bootstrap.Toast(t).show();
+        }
+
+        function toggleSenha() {
+            const input = document.getElementById("senha");
+            input.type = input.type === "password" ? "text" : "password";
+        }
+
+        async function login() {
+            const email = emailEl.value;
+            const senha = senhaEl.value;
 
             if (!email || !senha) {
-                alert("Preencha email e senha");
+                toast("Preencha os campos");
                 return;
             }
 
-            try {
-                const res = await fetch("https://localhost:7200/api/usuario/login", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        Email: email,
-                        Senha: senha
-                    })
-                });
+            const res = await fetch("https://localhost:7200/api/usuario/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ Email: email, Senha: senha })
+            });
 
-                if (!res.ok) {
-                    const text = await res.text();
-                    console.error("Erro:", res.status, text);
-                    alert("Login inválido");
-                    return;
-                }
-
-                const data = await res.json();
-                console.log(data);
-
-                const token = data.token;
-
-                if (!token) {
-                    alert("Token não veio na resposta!");
-                    return;
-                }
-
-                localStorage.setItem("token", token);
-                window.location.href = "index.html";
-
-            } catch (erro) {
-                console.error("Erro na requisição:", erro);
-                alert("Erro ao conectar com a API");
+            if (!res.ok) {
+                toast("Login inválido");
+                return;
             }
-        }
 
-        function logout() {
-            localStorage.removeItem("token");
-            window.location.href = "login.html";
+            const data = await res.json();
+            localStorage.setItem("token", data.token);
+
+            toast("Login realizado!");
+
+            setTimeout(() => {
+                const payload = JSON.parse(atob(data.token.split(".")[1]));
+                window.location.href = payload.role === "ADM" ? "admin.html" : "index.html";
+            }, 800);
         }
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

@@ -1,8 +1,9 @@
 using LanchoneteAPI.Data;
+using LanchoneteAPI.Models;
 using LanchoneteAPI.Repositories;
 using LanchoneteAPI.Services;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -11,7 +12,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(
@@ -22,6 +22,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddScoped<IProdutoService, ProdutoService>();
+builder.Services.AddScoped<IPedidoService, PedidoService>();
 
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
 
@@ -45,7 +46,6 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-//Botão de Cadeado Swagger
 builder.Services.AddSwaggerGen(c =>
 {
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -72,17 +72,8 @@ builder.Services.AddSwaggerGen(c =>
             new string[]{}
         }
     });
-});
 
-builder.Services.AddScoped<IPedidoService, PedidoService>();
-
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new()
-    {
-        Title = "API Lanchonete",
-        Version = "v1"
-    });
+    c.SwaggerDoc("v1", new() { Title = "API Lanchonete", Version = "v1" });
 });
 
 builder.Services.AddCors(options =>
@@ -91,15 +82,29 @@ builder.Services.AddCors(options =>
         p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
 
-
-
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    context.Database.EnsureCreated();
+
+    if (!context.Usuarios.Any(u => u.Perfil == "ADM"))
+    {
+        context.Usuarios.Add(new Usuario
+        {
+            Email = "admin@email.com",
+            Senha = BCrypt.Net.BCrypt.HashPassword("admin123"),
+            Perfil = "ADM"
+        });
+        context.SaveChanges();
+    }
+}
+
 app.UseDefaultFiles();
 app.UseStaticFiles();
-
 app.UseCors("AllowAll");
 
-// Configuração
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -107,16 +112,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
-
-
-
-
-
-// -- VÊ A AULA DE MARCELO PARA FAZER UMA TELA DE LOGIN

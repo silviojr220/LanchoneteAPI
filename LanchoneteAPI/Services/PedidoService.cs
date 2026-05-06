@@ -58,5 +58,13 @@ public class PedidoService : IPedidoService
             .Include(p => p.Itens)
             .ThenInclude(i => i.Produto)
             .FirstOrDefaultAsync(p => p.Id == id);
+
+    }
+    public async Task<List<Pedido>> ListOrders()
+    {
+        return await _context.Pedidos
+            .Include(p => p.Itens)
+            .ThenInclude(i => i.Produto)
+            .ToListAsync();
     }
 }
