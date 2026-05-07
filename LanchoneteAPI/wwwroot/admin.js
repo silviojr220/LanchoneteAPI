@@ -13,7 +13,7 @@ function verificarAdm() {
     const perfil = payload["role"]; // corrigido
 
     if (perfil !== "ADM") {
-        alert("Acesso negado!");
+        mostrarToast("Acesso negado!");
         window.location.href = "index.html";
     }
 }
@@ -22,11 +22,12 @@ async function carregarProdutos() {
     const token = localStorage.getItem("token");
 
     const res = await fetch(`${api}/produto`, {
-        headers: { "Authorization": "Bearer " + token }
+        headers: {
+            "Authorization": "Bearer " + token
+        }
     });
 
     if (res.status === 401) {
-        alert("Sem acesso!");
         window.location.href = "login.html";
         return;
     }
@@ -34,16 +35,40 @@ async function carregarProdutos() {
     const data = await res.json();
     const produtos = Array.isArray(data) ? data : data.dados || [];
 
-    const ul = document.getElementById("listaProdutos");
-    ul.innerHTML = "";
+    const tbody = document.getElementById("listaProdutos");
+    tbody.innerHTML = "";
 
     produtos.forEach(p => {
-        ul.innerHTML += `
-            <li class="mb-2">
-                ${p.nome} - R$ ${p.preco}
-                <button class="btn btn-sm btn-warning ms-2" onclick="editarProduto(${p.id}, '${p.nome}', '${p.tipo}', ${p.preco})">✏️</button>
-                <button class="btn btn-sm btn-danger ms-1" onclick="deletar(${p.id})">🗑</button>
-            </li>
+        tbody.innerHTML += `
+            <tr>
+                <td><strong>${p.nome}</strong></td>
+
+                <td>
+                    <span class="badge bg-dark">
+                        ${p.tipo}
+                    </span>
+                </td>
+
+                <td>
+                    R$ ${Number(p.preco).toFixed(2)}
+                </td>
+
+                <td>
+
+                    <button class="btn btn-sm btn-warning"
+                        onclick="editarProduto(${p.id}, '${p.nome}', '${p.tipo}', ${p.preco})">
+
+                        ✏️
+                    </button>
+
+                    <button class="btn btn-sm btn-danger"
+                        onclick="deletar(${p.id})">
+
+                        🗑
+                    </button>
+
+                </td>
+            </tr>
         `;
     });
 }
@@ -54,7 +79,7 @@ async function criarProduto() {
     const preco = parseFloat(document.getElementById("preco").value);
 
     if (!nome || !tipo || isNaN(preco)) {
-        alert("Preencha todos os campos!");
+        mostrarToast("Preencha todos os campos!");
         return;
     }
 
@@ -70,13 +95,13 @@ async function criarProduto() {
     });
 
     if (res.ok) {
-        alert("Produto criado!");
+        mostrarToast("Produto criado!");
         document.getElementById("nome").value = "";
         document.getElementById("tipo").value = "";
         document.getElementById("preco").value = "";
         carregarProdutos();
     } else {
-        alert("Erro ao criar produto");
+        mostrarToast("Erro ao criar produto");
     }
 }
 
@@ -87,7 +112,7 @@ function editarProduto(id, nomeAtual, tipoAtual, precoAtual) {
     document.getElementById("preco").value = precoAtual;
 
     // Troca o botão Cadastrar por Salvar
-    const btn = document.querySelector("button[onclick='criarProduto()']");
+    const btn = document.getElementById("btnProduto");
     btn.textContent = "Salvar Alterações";
     btn.setAttribute("onclick", `salvarEdicao(${id})`);
 }
@@ -109,7 +134,7 @@ async function salvarEdicao(id) {
     });
 
     if (res.ok) {
-        alert("Produto atualizado!");
+        mostrarToast("Produto atualizado!");
 
         // Volta o botão para Cadastrar
         const btn = document.querySelector(`button[onclick='salvarEdicao(${id})']`);
@@ -122,7 +147,7 @@ async function salvarEdicao(id) {
 
         carregarProdutos();
     } else {
-        alert("Erro ao atualizar produto");
+        mostrarToast("Erro ao atualizar produto");
     }
 }
 
@@ -137,11 +162,19 @@ async function deletar(id) {
     });
 
     if (res.ok) {
-        alert("Produto removido!");
+        mostrarToast("Produto removido!");
         carregarProdutos();
     } else {
-        alert("Erro ao deletar");
+       mostrarToast("Erro ao deletar");
     }
+}
+
+function mostrarToast(msg) {
+    const toastEl = document.getElementById("toast");
+
+    toastEl.querySelector(".toast-body").innerText = msg;
+
+    new bootstrap.Toast(toastEl).show();
 }
 
 function logout() {

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LanchoneteAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260504140224_UpdatePedido")]
-    partial class UpdatePedido
+    [Migration("20260507132138_AdicionarTelefone")]
+    partial class AdicionarTelefone
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -100,17 +100,26 @@ namespace LanchoneteAPI.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
 
                     b.Property<string>("Perfil")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
 
                     b.Property<string>("Senha")
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Telefone")
+                        .HasMaxLength(15)
+                        .HasColumnType("varchar(15)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Usuarios");
                 });

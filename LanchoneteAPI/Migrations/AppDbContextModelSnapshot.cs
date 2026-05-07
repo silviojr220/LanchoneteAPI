@@ -109,6 +109,10 @@ namespace LanchoneteAPI.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Telefone")
+                        .HasMaxLength(15)
+                        .HasColumnType("varchar(15)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Email")

@@ -24,20 +24,11 @@ namespace LanchoneteAPI.Controllers
             try
             {
                 var produtos = await _service.GetAll();
-
-                return Ok(new
-                {
-                    sucesso = true,
-                    dados = produtos
-                });
+                return Ok(new { sucesso = true, dados = produtos });
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    sucesso = false,
-                    erro = ex.Message
-                });
+                return BadRequest(new { sucesso = false, erro = ex.Message });
             }
         }
 
@@ -50,33 +41,19 @@ namespace LanchoneteAPI.Controllers
                 var produto = await _service.GetById(id);
 
                 if (produto == null)
-                {
-                    return NotFound(new
-                    {
-                        sucesso = false,
-                        mensagem = "Produto não encontrado"
-                    });
-                }
+                    return NotFound(new { sucesso = false, mensagem = "Produto não encontrado" });
 
-                return Ok(new
-                {
-                    sucesso = true,
-                    dados = produto
-                });
+                return Ok(new { sucesso = true, dados = produto });
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    sucesso = false,
-                    erro = ex.Message
-                });
+                return BadRequest(new { sucesso = false, erro = ex.Message });
             }
         }
 
         // POST: api/produto
         [HttpPost]
-        [Authorize(Roles = "ADM")]
+        [Authorize(Roles = "ADM,SUPERADM")]
         public async Task<IActionResult> Post([FromBody] ProdutoDTO dto)
         {
             try
@@ -89,26 +66,17 @@ namespace LanchoneteAPI.Controllers
                 };
 
                 var result = await _service.Add(produto);
-
-                return Ok(new
-                {
-                    sucesso = true,
-                    dados = result
-                });
+                return Ok(new { sucesso = true, dados = result });
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    sucesso = false,
-                    erro = ex.Message
-                });
+                return BadRequest(new { sucesso = false, erro = ex.Message });
             }
         }
 
         // PUT: api/produto/1
         [HttpPut("{id}")]
-        [Authorize(Roles = "ADM")]
+        [Authorize(Roles = "ADM,SUPERADM")]
         public async Task<IActionResult> Put(int id, [FromBody] ProdutoDTO dto)
         {
             try
@@ -122,45 +90,27 @@ namespace LanchoneteAPI.Controllers
                 };
 
                 await _service.Update(id, produto);
-
-                return Ok(new
-                {
-                    sucesso = true,
-                    mensagem = "Produto atualizado com sucesso"
-                });
+                return Ok(new { sucesso = true, mensagem = "Produto atualizado com sucesso" });
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    sucesso = false,
-                    erro = ex.Message
-                });
+                return BadRequest(new { sucesso = false, erro = ex.Message });
             }
         }
 
         // DELETE: api/produto/1
         [HttpDelete("{id}")]
-        [Authorize(Roles = "ADM")]
+        [Authorize(Roles = "ADM,SUPERADM")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
                 await _service.Delete(id);
-
-                return Ok(new
-                {
-                    sucesso = true,
-                    mensagem = "Produto removido com sucesso"
-                });
+                return Ok(new { sucesso = true, mensagem = "Produto removido com sucesso" });
             }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    sucesso = false,
-                    erro = ex.Message
-                });
+                return BadRequest(new { sucesso = false, erro = ex.Message });
             }
         }
     }

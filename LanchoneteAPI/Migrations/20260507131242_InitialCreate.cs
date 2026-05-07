@@ -52,11 +52,13 @@ namespace LanchoneteAPI.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Email = table.Column<string>(type: "longtext", nullable: false)
+                    Email = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Senha = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Perfil = table.Column<string>(type: "longtext", nullable: false)
+                    Perfil = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Telefone = table.Column<string>(type: "varchar(15)", maxLength: 15, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -83,6 +85,12 @@ namespace LanchoneteAPI.Migrations
                         column: x => x.PedidoId,
                         principalTable: "Pedidos",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ItensPedido_Produtos_ProdutoId",
+                        column: x => x.ProdutoId,
+                        principalTable: "Produtos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -90,6 +98,23 @@ namespace LanchoneteAPI.Migrations
                 name: "IX_ItensPedido_PedidoId",
                 table: "ItensPedido",
                 column: "PedidoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItensPedido_ProdutoId",
+                table: "ItensPedido",
+                column: "ProdutoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Usuarios_Email",
+                table: "Usuarios",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Usuarios_Telefone",
+                table: "Usuarios",
+                column: "Telefone",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -99,13 +124,13 @@ namespace LanchoneteAPI.Migrations
                 name: "ItensPedido");
 
             migrationBuilder.DropTable(
-                name: "Produtos");
-
-            migrationBuilder.DropTable(
                 name: "Usuarios");
 
             migrationBuilder.DropTable(
                 name: "Pedidos");
+
+            migrationBuilder.DropTable(
+                name: "Produtos");
         }
     }
 }

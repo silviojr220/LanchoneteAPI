@@ -24,6 +24,7 @@ public class AppDbContext : DbContext
             entity.Property(u => u.Email).IsRequired().HasMaxLength(150);
             entity.Property(u => u.Senha).IsRequired();
             entity.Property(u => u.Perfil).IsRequired().HasMaxLength(20);
+            entity.Property(u => u.Telefone).HasMaxLength(15);
         });
     }
 }

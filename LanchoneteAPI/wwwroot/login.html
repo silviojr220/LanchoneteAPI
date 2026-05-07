@@ -130,7 +130,7 @@
         </div>
     </div>
 
-    <script>
+    <script defer>
         function toast(msg) {
             const t = document.getElementById("toast");
             t.querySelector(".toast-body").innerText = msg;
@@ -143,8 +143,8 @@
         }
 
         async function login() {
-            const email = emailEl.value;
-            const senha = senhaEl.value;
+            const email = document.getElementById("email").value;
+            const senha = document.getElementById("senha").value;
 
             if (!email || !senha) {
                 toast("Preencha os campos");
@@ -168,8 +168,18 @@
             toast("Login realizado!");
 
             setTimeout(() => {
+
                 const payload = JSON.parse(atob(data.token.split(".")[1]));
-                window.location.href = payload.role === "ADM" ? "admin.html" : "index.html";
+                const perfil = payload.role;
+
+                if (perfil === "SUPERADM") {
+                    window.location.href = "superadmin.html";
+                } else if (perfil === "ADM") {
+                    window.location.href = "admin.html";
+                } else {
+                    window.location.href = "index.html";
+                }
+
             }, 800);
         }
     </script>

@@ -89,13 +89,13 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     context.Database.EnsureCreated();
 
-    if (!context.Usuarios.Any(u => u.Perfil == "ADM"))
+    if (!context.Usuarios.Any(u => u.Perfil == "SUPERADM"))
     {
         context.Usuarios.Add(new Usuario
         {
-            Email = "admin@email.com",
-            Senha = BCrypt.Net.BCrypt.HashPassword("admin123"),
-            Perfil = "ADM"
+            Email = "admin@gmail.com",
+            Senha = BCrypt.Net.BCrypt.HashPassword("adm123"),
+            Perfil = "SUPERADM"
         });
         context.SaveChanges();
     }
