@@ -13,8 +13,8 @@ namespace LanchoneteAPI.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "Telefone",
                 table: "Usuarios",
-                type: "varchar(15)",
-                maxLength: 15,
+                type: "varchar(16)",
+                maxLength: 16,
                 nullable: true)
                 .Annotation("MySql:CharSet", "utf8mb4");
         }

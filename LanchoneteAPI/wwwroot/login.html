@@ -162,7 +162,7 @@
                 return;
             }
 
-            const data = await res.json();
+            let data = {}; try {   data = await res.json();} catch {}
             localStorage.setItem("token", data.token);
 
             toast("Login realizado!");
@@ -176,6 +176,8 @@
                     window.location.href = "superadmin.html";
                 } else if (perfil === "ADM") {
                     window.location.href = "admin.html";
+                } else if (perfil === "FUNCIONARIO") {
+                    window.location.href = "funcionario.html";
                 } else {
                     window.location.href = "index.html";
                 }

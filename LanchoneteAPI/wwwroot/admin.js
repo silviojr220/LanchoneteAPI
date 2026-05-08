@@ -9,10 +9,10 @@ function verificarAdm() {
         return;
     }
 
-    const payload = JSON.parse(atob(token.split(".")[1])); // payload antes de usar
-    const perfil = payload["role"]; // corrigido
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    const perfil = payload["role"];
 
-    if (perfil !== "ADM") {
+    if (perfil !== "ADM" && perfil !== "SUPERADM") {
         mostrarToast("Acesso negado!");
         window.location.href = "index.html";
     }
@@ -32,7 +32,7 @@ async function carregarProdutos() {
         return;
     }
 
-    const data = await res.json();
+    let data = {}; try {   data = await res.json();} catch {}
     const produtos = Array.isArray(data) ? data : data.dados || [];
 
     const tbody = document.getElementById("listaProdutos");

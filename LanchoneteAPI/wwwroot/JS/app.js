@@ -54,7 +54,7 @@ async function carregarProdutos() {
         }
     });
 
-    const data = await res.json();
+    let data = {}; try {   data = await res.json();} catch {}
 
     produtosCache = Array.isArray(data)
         ? data
@@ -127,6 +127,20 @@ function renderCarousel() {
 
             </div>
         `;
+    });
+}
+
+function scrollCarousel(direction) {
+
+    const carousel = document.getElementById(
+        "carouselProdutos"
+    );
+
+    const amount = 260;
+
+    carousel.scrollBy({
+        left: amount * direction,
+        behavior: "smooth"
     });
 }
 
@@ -216,7 +230,8 @@ function aumentarQtd() {
 
     quantidadeAtual++;
 
-    renderProduto();
+    document.getElementById("qtdAtual")
+        .innerText = quantidadeAtual;
 }
 
 function diminuirQtd() {
@@ -225,7 +240,8 @@ function diminuirQtd() {
 
         quantidadeAtual--;
 
-        renderProduto();
+        document.getElementById("qtdAtual")
+            .innerText = quantidadeAtual;
     }
 }
 

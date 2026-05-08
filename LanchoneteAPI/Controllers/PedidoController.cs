@@ -36,7 +36,7 @@ public class PedidoController : ControllerBase
 
     // GET: api/pedido (ADM)
     [HttpGet]
-    [Authorize(Roles = "ADM")]
+    [Authorize(Roles = "ADM,SUPERADM,FUNCIONARIO")]
     public async Task<IActionResult> GetTodos()
     {
         try
@@ -52,7 +52,7 @@ public class PedidoController : ControllerBase
 
     // GET: api/pedido/1
     [HttpGet("{id}")]
-    [Authorize(Roles = "ADM")]
+    [Authorize(Roles = "ADM,SUPERADM,FUNCIONARIO")]
     public async Task<IActionResult> GetById(int id)
     {
         try

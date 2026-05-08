@@ -1,0 +1,216 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funcionário</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --verde: #198754;
+        }
+
+        body {
+            background: #f5f5f5;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #1f1f1f;
+            color: white;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 40px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .menu-item {
+            padding: 15px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: .2s;
+            text-decoration: none;
+            color: white;
+        }
+
+            .menu-item:hover {
+                background: rgba(255,255,255,.08);
+                color: white;
+            }
+
+            .menu-item.active {
+                background: var(--verde);
+                color: white;
+            }
+
+        .main {
+            flex: 1;
+            padding: 35px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+        }
+
+        .hero {
+            background: linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)), url('https://images.unsplash.com/photo-1550547660-d9450f859349');
+            background-size: cover;
+            background-position: center;
+            border-radius: 22px;
+            padding: 45px;
+            color: white;
+            margin-bottom: 35px;
+        }
+
+            .hero h1 {
+                font-size: 2.5rem;
+                font-weight: bold;
+            }
+
+        .nav-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        .nav-card {
+            background: white;
+            border-radius: 22px;
+            padding: 35px 25px;
+            text-align: center;
+            box-shadow: 0 5px 25px rgba(0,0,0,.07);
+            cursor: pointer;
+            transition: .25s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+            .nav-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 35px rgba(0,0,0,.12);
+                color: inherit;
+            }
+
+            .nav-card .icon {
+                font-size: 3rem;
+                margin-bottom: 15px;
+            }
+
+            .nav-card h4 {
+                font-weight: bold;
+                margin-bottom: 8px;
+            }
+
+            .nav-card p {
+                color: #888;
+                font-size: .9rem;
+                margin: 0;
+            }
+
+        @media(max-width: 992px) {
+            .layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+
+        <aside class="sidebar">
+            <div class="logo">🧑‍💼 Funcionário</div>
+            <div class="menu">
+                <a class="menu-item active" href="funcionario.html">🏠 Início</a>
+                <a class="menu-item" href="cardapio-func.html">🍽️ Cardápio</a>
+                <a class="menu-item" href="preparo.html">🔥 Preparo</a>
+                <a class="menu-item" href="pedidos-funcionario.html">📦 Pedidos</a>
+            </div>
+        </aside>
+
+        <main class="main">
+            <div class="topbar">
+                <div class="d-flex align-items-center gap-3">
+                    <div style="width:50px;height:50px;border-radius:50%;background:#198754;display:flex;align-items:center;justify-content:center;font-size:1.4rem;">
+                        🧑‍💼
+                    </div>
+                    <div>
+                        <small>Logado como</small>
+                        <h5 class="mb-0">FUNCIONÁRIO</h5>
+                    </div>
+                </div>
+                <button class="btn btn-danger" onclick="logout()">Sair</button>
+            </div>
+
+            <div class="hero">
+                <h1>Painel do Funcionário</h1>
+                <p>Gerencie pedidos, preparo e cardápio.</p>
+            </div>
+
+            <div class="nav-cards">
+                <a href="cardapio-func.html" class="nav-card">
+                    <div class="icon">🍽️</div>
+                    <h4>Cardápio</h4>
+                    <p>Visualize os produtos disponíveis</p>
+                </a>
+                <a href="preparo.html" class="nav-card">
+                    <div class="icon">🔥</div>
+                    <h4>Preparo</h4>
+                    <p>Confirme pedidos prontos para entrega</p>
+                </a>
+                <a href="pedidos-funcionario.html" class="nav-card">
+                    <div class="icon">📦</div>
+                    <h4>Pedidos</h4>
+                    <p>Acompanhe todos os pedidos e seus status</p>
+                </a>
+            </div>
+        </main>
+
+    </div>
+    <script>
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "login.html";
+        }
+
+        // Verificação básica de autenticação
+        (function () {
+            const token = localStorage.getItem("token");
+            if (!token) { window.location.href = "login.html"; return; }
+            try {
+                const payload = JSON.parse(atob(token.split(".")[1]));
+                const role = payload.role ||
+                    payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+                if (role !== "FUNCIONARIO") {
+                    alert("Acesso negado!");
+                    window.location.href = "login.html";
+                }
+            } catch { window.location.href = "login.html"; }
+        })();
+    </script>
+</body>
+</html>

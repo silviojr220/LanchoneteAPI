@@ -112,6 +112,164 @@ public class UsuarioController : ControllerBase
         return Ok(new { mensagem = "ADM removido com sucesso" });
     }
 
+    // Só SUPERADM cria FUNCIONARIO
+    [Authorize(Roles = "SUPERADM")]
+    [HttpPost("criar-funcionario")]
+    public async Task<IActionResult> CriarFuncionario([FromBody] CadastroDTO dto)
+    {
+        var existe = await _context.Usuarios.AnyAsync(u => u.Email == dto.Email);
+        if (existe)
+            return Conflict(new { mensagem = "Email já cadastrado" });
+
+        var usuario = new Usuario
+        {
+            Email = dto.Email,
+            Senha = BCrypt.Net.BCrypt.HashPassword(dto.Senha),
+            Telefone = dto.Telefone,
+            Perfil = "FUNCIONARIO"
+        };
+
+        _context.Usuarios.Add(usuario);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { mensagem = "Funcionário criado com sucesso", usuario.Email });
+    }
+
+    // Só SUPERADM lista funcionários
+    [Authorize(Roles = "SUPERADM")]
+    [HttpGet("funcionarios")]
+    public async Task<IActionResult> ListarFuncionarios()
+    {
+        var funcionarios = await _context.Usuarios
+            .Where(u => u.Perfil == "FUNCIONARIO")
+            .Select(u => new { u.Id, u.Email, u.Telefone })
+            .ToListAsync();
+
+        return Ok(new { sucesso = true, dados = funcionarios });
+    }
+
+    // Só SUPERADM remove funcionário
+    [Authorize(Roles = "SUPERADM")]
+    [HttpDelete("funcionario/{id}")]
+    public async Task<IActionResult> RemoverFuncionario(int id)
+    {
+        var usuario = await _context.Usuarios
+            .FirstOrDefaultAsync(u => u.Id == id && u.Perfil == "FUNCIONARIO");
+
+        if (usuario == null)
+            return NotFound(new { mensagem = "Funcionário não encontrado" });
+
+        _context.Usuarios.Remove(usuario);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { mensagem = "Funcionário removido com sucesso" });
+    }
+
+    // Só SUPERADM edita funcionário
+    [Authorize(Roles = "SUPERADM")]
+    [HttpPut("funcionario/{id}")]
+    public async Task<IActionResult> EditarFuncionario(int id, [FromBody] EditarUsuarioDTO dto)
+    {
+        var usuario = await _context.Usuarios
+            .FirstOrDefaultAsync(u => u.Id == id && u.Perfil == "FUNCIONARIO");
+
+        if (usuario == null)
+            return NotFound(new { mensagem = "Funcionário não encontrado" });
+
+        var emailEmUso = await _context.Usuarios
+            .AnyAsync(u => u.Email == dto.Email && u.Id != id);
+
+        if (emailEmUso)
+            return Conflict(new { mensagem = "Email já está em uso" });
+
+        usuario.Email = dto.Email;
+        usuario.Telefone = dto.Telefone;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new { mensagem = "Funcionário atualizado com sucesso" });
+    }
+
+    // Listar todos os clientes
+    [Authorize(Roles = "SUPERADM")]
+    [HttpGet("clientes")]
+    public async Task<IActionResult> ListarClientes()
+    {
+        var clientes = await _context.Usuarios
+            .Where(u => u.Perfil == "CLIENTE")
+            .Select(u => new { u.Id, u.Email, u.Telefone })
+            .ToListAsync();
+
+        return Ok(new { sucesso = true, dados = clientes });
+    }
+
+    // Remover cliente
+    [Authorize(Roles = "SUPERADM")]
+    [HttpDelete("cliente/{id}")]
+    public async Task<IActionResult> RemoverCliente(int id)
+    {
+        var usuario = await _context.Usuarios
+            .FirstOrDefaultAsync(u => u.Id == id && u.Perfil == "CLIENTE");
+
+        if (usuario == null)
+            return NotFound(new { mensagem = "Cliente não encontrado" });
+
+        _context.Usuarios.Remove(usuario);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { mensagem = "Cliente removido com sucesso" });
+    }
+
+    // Editar ADM
+    [Authorize(Roles = "SUPERADM")]
+    [HttpPut("adm/{id}")]
+    public async Task<IActionResult> EditarAdm(int id, [FromBody] EditarUsuarioDTO dto)
+    {
+        var usuario = await _context.Usuarios
+            .FirstOrDefaultAsync(u => u.Id == id && u.Perfil == "ADM");
+
+        if (usuario == null)
+            return NotFound(new { mensagem = "ADM não encontrado" });
+
+        var emailEmUso = await _context.Usuarios
+            .AnyAsync(u => u.Email == dto.Email && u.Id != id);
+
+        if (emailEmUso)
+            return Conflict(new { mensagem = "Email já está em uso" });
+
+        usuario.Email = dto.Email;
+        usuario.Telefone = dto.Telefone;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new { mensagem = "ADM atualizado com sucesso" });
+    }
+
+    // Editar Cliente
+    [Authorize(Roles = "SUPERADM")]
+    [HttpPut("cliente/{id}")]
+    public async Task<IActionResult> EditarCliente(int id, [FromBody] EditarUsuarioDTO dto)
+    {
+        var usuario = await _context.Usuarios
+            .FirstOrDefaultAsync(u => u.Id == id && u.Perfil == "CLIENTE");
+
+        if (usuario == null)
+            return NotFound(new { mensagem = "Cliente não encontrado" });
+
+        var emailEmUso = await _context.Usuarios
+            .AnyAsync(u => u.Email == dto.Email && u.Id != id);
+
+        if (emailEmUso)
+            return Conflict(new { mensagem = "Email já está em uso" });
+
+        usuario.Email = dto.Email;
+        usuario.Telefone = dto.Telefone;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new { mensagem = "Cliente atualizado com sucesso" });
+    }
+
     private string GerarToken(Usuario usuario)
     {
         var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);

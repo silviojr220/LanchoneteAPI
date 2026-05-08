@@ -110,8 +110,8 @@ namespace LanchoneteAPI.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("Telefone")
-                        .HasMaxLength(15)
-                        .HasColumnType("varchar(15)");
+                        .HasMaxLength(16)
+                        .HasColumnType("varchar(16)");
 
                     b.HasKey("Id");
 
