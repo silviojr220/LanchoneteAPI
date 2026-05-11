@@ -19,4 +19,19 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.18.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\img\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\img\agua.png" />
+    <None Include="wwwroot\img\coxinha.png" />
+    <None Include="wwwroot\img\enroladinho.png" />
+    <None Include="wwwroot\img\esfirra.png" />
+    <None Include="wwwroot\img\kibe.png" />
+    <None Include="wwwroot\img\pastel.png" />
+    <None Include="wwwroot\img\refri.png" />
+    <None Include="wwwroot\img\suco_laranja.png" />
+  </ItemGroup>
+
 </Project>

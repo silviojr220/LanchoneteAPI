@@ -1,4 +1,4 @@
-﻿const api = "https://localhost:7200/api";
+﻿const api = "/api";
 
 // Verifica se é ADM ao carregar a página
 function verificarAdm() {

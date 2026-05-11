@@ -1,4 +1,4 @@
-﻿const api = "https://localhost:7200/api";
+﻿const api = "/api";
 
 function verificarFuncionario() {
     const token = localStorage.getItem("token");

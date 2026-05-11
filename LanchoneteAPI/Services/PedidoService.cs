@@ -17,6 +17,7 @@ public class PedidoService : IPedidoService
     public async Task<Pedido> CriarPedido(PedidoDTO dto)
     {
         var pedido = new Pedido();
+
         decimal total = 0;
 
         foreach (var item in dto.Itens)
@@ -38,7 +39,10 @@ public class PedidoService : IPedidoService
 
         pedido.Total = total;
 
+        pedido.Status = "EmPreparo";
+
         _context.Pedidos.Add(pedido);
+
         await _context.SaveChangesAsync();
 
         return pedido;
@@ -49,6 +53,7 @@ public class PedidoService : IPedidoService
         return await _context.Pedidos
             .Include(p => p.Itens)
             .ThenInclude(i => i.Produto)
+            .OrderByDescending(p => p.Id)
             .ToListAsync();
     }
 
@@ -58,13 +63,28 @@ public class PedidoService : IPedidoService
             .Include(p => p.Itens)
             .ThenInclude(i => i.Produto)
             .FirstOrDefaultAsync(p => p.Id == id);
-
     }
+
     public async Task<List<Pedido>> ListOrders()
     {
         return await _context.Pedidos
             .Include(p => p.Itens)
             .ThenInclude(i => i.Produto)
             .ToListAsync();
+    }
+
+    public async Task<bool> AtualizarStatus(int id, string status)
+    {
+        var pedido = await _context.Pedidos
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (pedido == null)
+            return false;
+
+        pedido.Status = status;
+
+        await _context.SaveChangesAsync();
+
+        return true;
     }
 }

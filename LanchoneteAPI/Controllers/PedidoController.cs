@@ -69,4 +69,45 @@ public class PedidoController : ControllerBase
             return BadRequest(new { sucesso = false, erro = ex.Message });
         }
     }
+
+    // PUT: api/pedido/1/status
+    [HttpPut("{id}/status")]
+    [Authorize(Roles = "ADM,SUPERADM,FUNCIONARIO")]
+    public async Task<IActionResult> AtualizarStatus(
+        int id,
+        [FromBody] AtualizarStatusPedidoDTO dto)
+    {
+        try
+        {
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Status))
+            {
+                return BadRequest(new
+                {
+                    mensagem = "Status inválido."
+                });
+            }
+
+            var atualizado = await _service.AtualizarStatus(id, dto.Status);
+
+            if (!atualizado)
+            {
+                return NotFound(new
+                {
+                    mensagem = "Pedido não encontrado."
+                });
+            }
+
+            return Ok(new
+            {
+                mensagem = "Status atualizado com sucesso."
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new
+            {
+                mensagem = ex.Message
+            });
+        }
+    }
 }

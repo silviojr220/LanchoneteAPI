@@ -1,8 +1,7 @@
-﻿const api = "https://localhost:7200/api";
+﻿const api = "/api";
 
 let produtosCache = [];
 let carrinho = [];
-
 let produtoAtual = null;
 let quantidadeAtual = 1;
 
@@ -14,58 +13,8 @@ carregarProdutos();
 /* SIDEBAR */
 
 function toggleSidebar() {
-
-    document
-        .getElementById("sidebar")
-        .classList
-        .toggle("closed");
+    document.getElementById("sidebar").classList.toggle("closed");
 }
-
-/* USER */
-
-function carregarUsuario() {
-
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-
-        window.location.href = "login.html";
-
-        return;
-    }
-
-    const payload = JSON.parse(
-        atob(token.split(".")[1])
-    );
-
-    document.getElementById("nomeUsuario")
-        .innerText = payload.email || "Cliente";
-}
-
-/* PRODUTOS */
-
-async function carregarProdutos() {
-
-    const token = localStorage.getItem("token");
-
-    const res = await fetch(`${api}/produto`, {
-        headers: {
-            "Authorization": "Bearer " + token
-        }
-    });
-
-    let data = {}; try {   data = await res.json();} catch {}
-
-    produtosCache = Array.isArray(data)
-        ? data
-        : data.dados || [];
-
-    renderSidebar();
-
-    renderCarousel();
-}
-
-/* SIDEBAR */
 
 function renderSidebar() {
 
@@ -81,7 +30,7 @@ function renderSidebar() {
 
         item.innerHTML = `
             <span class="menu-icon">
-                🍔
+                <i class="bi bi-bag-fill"></i>
             </span>
 
             <span class="menu-text">
@@ -89,12 +38,53 @@ function renderSidebar() {
             </span>
         `;
 
-        item.addEventListener("click", () => {
-            abrirProduto(p.id);
-        });
+        item.addEventListener("click", () => abrirProduto(p.id));
 
         div.appendChild(item);
     });
+}
+
+/* USER */
+
+function carregarUsuario() {
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    const payload = JSON.parse(atob(token.split(".")[1]));
+
+    document.getElementById("nomeUsuario").innerText =
+        payload.email || "Cliente";
+}
+
+/* PRODUTOS */
+
+async function carregarProdutos() {
+
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`${api}/produto`, {
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    });
+
+    let data = {};
+
+    try {
+        data = await res.json();
+    } catch { }
+
+    produtosCache = Array.isArray(data)
+        ? data
+        : data.dados || [];
+
+    renderSidebar();
+    renderCarousel();
 }
 
 /* CAROUSEL */
@@ -107,39 +97,51 @@ function renderCarousel() {
 
     produtosCache.forEach(p => {
 
-        div.innerHTML += `
-            <div class="carousel-card"
-                 onclick="abrirProduto(${p.id})">
+        const card = document.createElement("div");
 
-                <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd">
+        card.className = "carousel-card";
 
-                <div class="carousel-info">
+        card.addEventListener("click", () => abrirProduto(p.id));
 
-                    <h5>${p.nome}</h5>
+        card.innerHTML = `
 
-                    <small>${p.tipo}</small>
+            <!-- IMAGEM DO PRODUTO -->
+            <img 
+                src="${p.imagemUrl || '/img/default.png'}"
+                alt="${p.nome}"
+            >
 
-                    <div class="preco">
-                        R$ ${p.preco.toFixed(2)}
-                    </div>
+            <div class="carousel-info">
+
+                <h5>
+                    <i class="bi bi-bag-fill"></i>
+                    ${p.nome}
+                </h5>
+
+                <small>
+                    <i class="bi bi-tag-fill"></i>
+                    ${p.tipo}
+                </small>
+
+                <div class="preco">
+
+                    <i class="bi bi-cash-coin"></i>
+
+                    R$ ${Number(p.preco).toFixed(2)}
 
                 </div>
 
             </div>
         `;
+
+        div.appendChild(card);
     });
 }
 
 function scrollCarousel(direction) {
 
-    const carousel = document.getElementById(
-        "carouselProdutos"
-    );
-
-    const amount = 260;
-
-    carousel.scrollBy({
-        left: amount * direction,
+    document.getElementById("carouselProdutos").scrollBy({
+        left: 260 * direction,
         behavior: "smooth"
     });
 }
@@ -148,14 +150,10 @@ function scrollCarousel(direction) {
 
 function abrirProduto(id) {
 
-    produtoAtual = produtosCache.find(
-        p => p.id === id
-    );
+    produtoAtual = produtosCache.find(p => p.id === id);
 
     if (!produtoAtual) {
-
         console.error("Produto não encontrado");
-
         return;
     }
 
@@ -164,29 +162,38 @@ function abrirProduto(id) {
     renderProduto();
 }
 
+/* RENDER PRODUTO */
+
 function renderProduto() {
 
     if (!produtoAtual) return;
 
-    const div = document.getElementById(
-        "produtoSelecionado"
-    );
+    const div = document.getElementById("produtoSelecionado");
 
     div.innerHTML = `
+
         <div class="produto-card fade-in">
 
-            <img
-                src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd"
+            <!-- IMAGEM PRINCIPAL -->
+            <img 
+                src="${produtoAtual.imagemUrl || '/img/default.png'}"
+                alt="${produtoAtual.nome}"
             >
 
             <div class="produto-info">
 
                 <h2>
+
+                    <i class="bi bi-bag-fill"></i>
+
                     ${produtoAtual.nome}
+
                 </h2>
 
                 <p>
-                    Produto delicioso da nossa lanchonete 🍔
+
+                    ${produtoAtual.descricao || 'Produto delicioso da nossa lanchonete'}
+
                 </p>
 
                 <div class="preco">
@@ -198,7 +205,7 @@ function renderProduto() {
                 <div class="quantidade">
 
                     <button onclick="diminuirQtd()">
-                        -
+                        <i class="bi bi-dash-lg"></i>
                     </button>
 
                     <h4 id="qtdAtual">
@@ -206,13 +213,17 @@ function renderProduto() {
                     </h4>
 
                     <button onclick="aumentarQtd()">
-                        +
+                        <i class="bi bi-plus-lg"></i>
                     </button>
 
                 </div>
 
-                <button class="btn-finalizar"
-                        onclick="adicionarCarrinho()">
+                <button 
+                    class="btn-finalizar"
+                    onclick="adicionarCarrinho()"
+                >
+
+                    <i class="bi bi-cart-plus-fill"></i>
 
                     Adicionar ao Carrinho
 
@@ -230,8 +241,8 @@ function aumentarQtd() {
 
     quantidadeAtual++;
 
-    document.getElementById("qtdAtual")
-        .innerText = quantidadeAtual;
+    document.getElementById("qtdAtual").innerText =
+        quantidadeAtual;
 }
 
 function diminuirQtd() {
@@ -240,8 +251,8 @@ function diminuirQtd() {
 
         quantidadeAtual--;
 
-        document.getElementById("qtdAtual")
-            .innerText = quantidadeAtual;
+        document.getElementById("qtdAtual").innerText =
+            quantidadeAtual;
     }
 }
 
@@ -249,8 +260,8 @@ function diminuirQtd() {
 
 function adicionarCarrinho() {
 
-    const item = carrinho.find(
-        i => i.produtoId === produtoAtual.id
+    const item = carrinho.find(i =>
+        i.produtoId === produtoAtual.id
     );
 
     if (item) {
@@ -284,18 +295,15 @@ function renderCarrinho() {
 
         total += i.preco * i.quantidade;
 
-        div.innerHTML += `
+        div.insertAdjacentHTML("beforeend", `
+
             <div class="carrinho-item">
 
                 <div>
 
-                    <strong>${i.nome}</strong>
+                    <strong>${i.nome}</strong><br>
 
-                    <br>
-
-                    <small>
-                        ${i.quantidade}x
-                    </small>
+                    <small>${i.quantidade}x</small>
 
                 </div>
 
@@ -305,25 +313,26 @@ function renderCarrinho() {
 
                     <br>
 
-                    <button class="btn btn-sm btn-danger mt-2"
-                            onclick="removerItem(${index})">
+                    <button 
+                        class="btn btn-sm btn-danger mt-2"
+                        onclick="removerItem(${index})"
+                    >
 
-                        ✕
+                        <i class="bi bi-trash-fill"></i>
 
                     </button>
 
                 </div>
 
             </div>
-        `;
+        `);
     });
 
-    totalDiv.innerHTML = `
-        Total: R$ ${total.toFixed(2)}
-    `;
+    totalDiv.innerHTML =
+        `Total: R$ ${total.toFixed(2)}`;
 }
 
-/* REMOVER */
+/* REMOVER ITEM */
 
 function removerItem(index) {
 
@@ -332,7 +341,7 @@ function removerItem(index) {
     renderCarrinho();
 }
 
-/* FINALIZAR */
+/* FINALIZAR PEDIDO */
 
 async function finalizarPedido() {
 

@@ -1,14 +1,17 @@
-﻿const api = "/api";
-const ENDPOINT_STATUS = (id) => `${API}/pedido/${id}/status`; // ✏️ ajuste o endpoint
+﻿// ============================================================
+// ⚙️  CONFIGURAÇÃO — ajuste aqui quando souber os valores
+// ============================================================
+const api = "/api";
 const STATUS = {
-    EM_PREPARO: "EmPreparo",   // ✏️ ajuste para o valor que a API espera
-    PRONTO: "Pronto",      // ✏️ ajuste para o valor que a API espera
-    FINALIZADO: "Finalizado"   // ✏️ ajuste para o valor que a API espera
+    PENDENTE: "Pendente",    // ✏️ ajuste para o valor que a API retorna
+    EM_PREPARO: "EmPreparo",   // ✏️ ajuste para o valor que a API retorna
+    PRONTO: "Pronto",      // ✏️ ajuste para o valor que a API retorna
+    FINALIZADO: "Finalizado"   // ✏️ ajuste para o valor que a API retorna
 };
-
+// ============================================================
 
 let todosPedidos = [];
-let filtroAtual = "EmPreparo";
+let filtroAtual = "todos";
 
 function getHeaders() {
     return {
@@ -64,6 +67,23 @@ function filtrar(status) {
     renderizar();
 }
 
+function badgePorStatus(status) {
+    switch (status) {
+        case STATUS.PENDENTE:
+            return `<span class="badge-nao-concluido">❌ Não Concluído</span>
+                    <span class="badge-em-preparo ms-2">🔥 Aguardando Preparo</span>`;
+        case STATUS.EM_PREPARO:
+            return `<span class="badge-nao-concluido">❌ Não Concluído</span>
+                    <span class="badge-em-preparo ms-2">🔥 Em Preparo</span>`;
+        case STATUS.PRONTO:
+            return `<span class="badge-pronto">🍽️ Pronto para Entrega</span>`;
+        case STATUS.FINALIZADO:
+            return `<span class="badge-finalizado">✅ Finalizado</span>`;
+        default:
+            return `<span class="badge bg-secondary">${status}</span>`;
+    }
+}
+
 function renderizar() {
     const div = document.getElementById("pedidos");
     div.innerHTML = "";
@@ -83,15 +103,6 @@ function renderizar() {
     }
 
     lista.forEach(p => {
-        const estaEmPreparo = p.status === STATUS.EM_PREPARO;
-        const estaPronto = p.status === STATUS.PRONTO;
-
-        const badgeHTML = estaEmPreparo
-            ? `<span class="badge-preparo">🔥 Em Preparo</span>`
-            : estaPronto
-                ? `<span class="badge-pronto">✅ Pronto</span>`
-                : `<span class="badge badge-secondary">${p.status}</span>`;
-
         let itensHTML = "";
         (p.itens || []).forEach(i => {
             itensHTML += `
@@ -104,74 +115,26 @@ function renderizar() {
                 </div>`;
         });
 
-        const btnHTML = estaEmPreparo
-            ? `<button class="btn-confirmar w-100 mt-3" onclick="confirmarPronto(${p.id}, this)">
-                   ✅ Confirmar que está Pronto
-               </button>`
-            : `<button class="btn-confirmar w-100 mt-3" disabled>
-                   ✅ Já Confirmado
-               </button>`;
+        const data = p.dataCriacao
+            ? new Date(p.dataCriacao).toLocaleString("pt-BR")
+            : new Date().toLocaleDateString("pt-BR");
 
         div.insertAdjacentHTML("beforeend", `
-            <div class="col-lg-6" id="card-preparo-${p.id}">
+            <div class="col-lg-6">
                 <div class="pedido-card">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                         <h5 class="mb-0">Pedido #${p.id}</h5>
-                        <div id="badge-${p.id}">${badgeHTML}</div>
+                        <div>${badgePorStatus(p.status)}</div>
                     </div>
                     ${itensHTML}
                     <div class="d-flex justify-content-between align-items-center mt-3">
-                        <small class="text-muted">
-                            ${p.dataCriacao
-                ? new Date(p.dataCriacao).toLocaleString("pt-BR")
-                : new Date().toLocaleDateString("pt-BR")}
-                        </small>
+                        <small class="text-muted">${data}</small>
                         <strong class="text-success">R$ ${Number(p.total).toFixed(2)}</strong>
                     </div>
-                    <div id="btn-area-${p.id}">${btnHTML}</div>
                 </div>
             </div>
         `);
     });
-}
-
-async function confirmarPronto(id, btn) {
-    if (!confirm(`Confirmar que o Pedido #${id} está pronto?`)) return;
-
-    btn.disabled = true;
-    btn.textContent = "Atualizando...";
-
-    try {
-        const res = await fetch(ENDPOINT_STATUS(id), {
-            method: "PUT",            // ✏️ troque para PATCH se necessário
-            headers: getHeaders(),
-            body: JSON.stringify({ status: STATUS.PRONTO })
-        });
-
-        if (res.ok) {
-            // Atualiza localmente sem recarregar tudo
-            const pedido = todosPedidos.find(p => p.id === id);
-            if (pedido) pedido.status = STATUS.PRONTO;
-
-            document.getElementById(`badge-${id}`).innerHTML =
-                `<span class="badge-pronto">✅ Pronto</span>`;
-
-            document.getElementById(`btn-area-${id}`).innerHTML =
-                `<button class="btn-confirmar w-100 mt-3" disabled>✅ Já Confirmado</button>`;
-
-        } else {
-            const data = await res.json().catch(() => ({}));
-            alert(data.mensagem || "Erro ao atualizar status.");
-            btn.disabled = false;
-            btn.textContent = "✅ Confirmar que está Pronto";
-        }
-
-    } catch (erro) {
-        console.error(erro);
-        alert("Erro ao conectar com a API.");
-        btn.disabled = false;
-        btn.textContent = "✅ Confirmar que está Pronto";
-    }
 }
 
 // ==================== INIT ====================

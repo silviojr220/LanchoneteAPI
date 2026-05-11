@@ -6,7 +6,12 @@ using LanchoneteAPI.Models;
 public interface IPedidoService
 {
     Task<Pedido> CriarPedido(PedidoDTO dto);
+
     Task<List<Pedido>> GetAll();
+
     Task<Pedido> GetById(int id);
+
     Task<List<Pedido>> ListOrders();
+
+    Task<bool> AtualizarStatus(int id, string status);
 }
