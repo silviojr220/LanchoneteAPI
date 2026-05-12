@@ -82,9 +82,7 @@ async function carregarPedidos() {
                                 Pedido #${p.id}
                             </h4>
 
-                            <span class="badge-status">
-                                Finalizado
-                            </span>
+                            ${badgeStatus(p.status)}
 
                         </div>
 
@@ -112,6 +110,27 @@ async function carregarPedidos() {
 
         console.error(erro);
 
+    }
+}
+
+function badgeStatus(status) {
+
+    switch (status) {
+
+        case "Pendente":
+            return `<span class="badge bg-danger">Pendente</span>`;
+
+        case "EmPreparo":
+            return `<span class="badge bg-warning text-dark">Em preparo</span>`;
+
+        case "Pronto":
+            return `<span class="badge bg-info text-dark">Pronto</span>`;
+
+        case "Finalizado":
+            return `<span class="badge bg-success">Finalizado</span>`;
+
+        default:
+            return `<span class="badge bg-secondary">${status}</span>`;
     }
 }
 

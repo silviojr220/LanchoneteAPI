@@ -1,12 +1,12 @@
 ﻿// ============================================================
-// ⚙️  CONFIGURAÇÃO — ajuste aqui quando souber os valores
+// ⚙️  CONFIGURAÇÃO
 // ============================================================
 const api = "/api";
 const STATUS = {
-    PENDENTE: "Pendente",    // ✏️ ajuste para o valor que a API retorna
-    EM_PREPARO: "EmPreparo",   // ✏️ ajuste para o valor que a API retorna
-    PRONTO: "Pronto",      // ✏️ ajuste para o valor que a API retorna
-    FINALIZADO: "Finalizado"   // ✏️ ajuste para o valor que a API retorna
+    PENDENTE: "Pendente",    
+    EM_PREPARO: "EmPreparo",   
+    PRONTO: "Pronto",    
+    FINALIZADO: "Finalizado"  
 };
 // ============================================================
 
@@ -43,7 +43,7 @@ function verificarFuncionario() {
 
 async function carregarPedidos() {
     try {
-        const res = await fetch(`${API}/pedido`, { headers: getHeaders() });
+        const res = await fetch(`${api}/pedido`, { headers: getHeaders() });
 
         if (res.status === 401) {
             localStorage.removeItem("token");

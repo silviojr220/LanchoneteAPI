@@ -62,8 +62,10 @@ namespace LanchoneteAPI.Controllers
                 {
                     Nome = dto.Nome,
                     Tipo = dto.Tipo,
-                    Preco = dto.Preco
+                    Preco = dto.Preco,
+                    Descricao = dto.Descricao
                 };
+
 
                 var result = await _service.Add(produto);
                 return Ok(new { sucesso = true, dados = result });
@@ -86,7 +88,8 @@ namespace LanchoneteAPI.Controllers
                     Id = id,
                     Nome = dto.Nome,
                     Tipo = dto.Tipo,
-                    Preco = dto.Preco
+                    Preco = dto.Preco,
+                    Descricao = dto.Descricao
                 };
 
                 await _service.Update(id, produto);

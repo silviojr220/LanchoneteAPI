@@ -1,5 +1,5 @@
 ﻿const api = "/api";
-const ENDPOINT_STATUS = (id) => `${API}/pedido/${id}/status`; // ✏️ ajuste o endpoint
+const ENDPOINT_STATUS = (id) => `${api}/pedido/${id}/status`; // ✏️ ajuste o endpoint
 const STATUS = {
     EM_PREPARO: "EmPreparo",   // ✏️ ajuste para o valor que a API espera
     PRONTO: "Pronto",      // ✏️ ajuste para o valor que a API espera
@@ -40,7 +40,7 @@ function verificarFuncionario() {
 
 async function carregarPedidos() {
     try {
-        const res = await fetch(`${API}/pedido`, { headers: getHeaders() });
+        const res = await fetch(`${api}/pedido`, { headers: getHeaders() });
 
         if (res.status === 401) {
             localStorage.removeItem("token");

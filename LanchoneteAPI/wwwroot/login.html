@@ -1,23 +1,39 @@
 ﻿<!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
+
     <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>Login</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- BOOTSTRAP -->
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <!-- BOOTSTRAP ICONS -->
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
+
         :root {
             --amarelo: #FFC107;
             --amarelo-escuro: #ffb300;
         }
 
-        /* FUNDO */
+        /* BODY */
+
         body {
             height: 100vh;
             margin: 0;
             font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(rgba(255,193,7,0.4), rgba(255,255,255,0.4)), url('https://images.unsplash.com/photo-1550547660-d9450f859349');
+            background: linear-gradient( rgba(255,193,7,0.35), rgba(255,255,255,0.25) ), url('https://images.unsplash.com/photo-1550547660-d9450f859349');
             background-size: cover;
             background-position: center;
             display: flex;
@@ -26,19 +42,21 @@
         }
 
         /* CARD */
+
         .login-box {
-            width: 360px;
+            width: 380px;
             padding: 40px;
-            border-radius: 20px;
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(8px);
+            border-radius: 24px;
+            background: rgba(255,255,255,0.78);
+            backdrop-filter: blur(14px);
             border: 1px solid rgba(255,255,255,0.6);
             color: #333;
             box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-            animation: fadeIn 0.5s ease;
+            animation: fade .35s ease;
         }
 
-        @keyframes fadeIn {
+        @keyframes fade {
+
             from {
                 opacity: 0;
                 transform: translateY(15px);
@@ -50,143 +68,390 @@
             }
         }
 
-        .login-box h2 {
+        h2 {
             text-align: center;
             margin-bottom: 25px;
+            font-weight: bold;
         }
 
-        /* INPUT */
-        .form-control {
-            border-radius: 10px;
+        /* INPUTS */
+
+        .input-group-text {
+            background: rgba(255,255,255,.7);
             border: 1px solid #ddd;
+            border-radius: 12px 0 0 12px;
+        }
+
+        .form-control {
+            background: rgba(255,255,255,.75);
+            border: 1px solid #ddd;
+            border-radius: 0 12px 12px 0;
+            height: 52px;
         }
 
             .form-control:focus {
                 border-color: var(--amarelo);
-                box-shadow: 0 0 0 2px rgba(255,193,7,0.3);
+                box-shadow: 0 0 0 3px rgba(255,193,7,.25);
             }
 
         /* SENHA */
+
         .password-box {
             position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+            .password-box .form-control {
+                padding-left: 55px;
+                padding-right: 55px;
+                border-radius: 14px;
+            }
+
+        .input-icon {
+            position: absolute;
+            left: 18px;
+            z-index: 5;
+            color: #555;
+            display: flex;
+            align-items: center;
         }
 
         .show-pass {
             position: absolute;
-            right: 12px;
-            top: 10px;
+            right: 18px;
+            z-index: 5;
             cursor: pointer;
+            color: #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
+            .show-pass i,
+            .input-icon i {
+                font-size: 1.1rem;
+            }
+
         /* BOTÃO */
+
         .btn-login {
             background: var(--amarelo);
             border: none;
             border-radius: 30px;
             font-weight: bold;
+            height: 52px;
+            transition: .25s;
         }
 
             .btn-login:hover {
                 background: var(--amarelo-escuro);
-                transform: scale(1.03);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(255,193,7,.35);
             }
 
         /* LINKS */
+
         .links {
             text-align: center;
-            margin-top: 15px;
+            margin-top: 18px;
         }
 
             .links a {
                 color: #555;
                 text-decoration: none;
+                font-weight: 600;
             }
+
+        /* ICONS */
+
+        .bi {
+            vertical-align: middle;
+        }
+
+        h2 i,
+        .btn-login i {
+            margin-right: 8px;
+        }
     </style>
+
 </head>
 
 <body>
 
     <div class="login-box">
-        <h2>Login</h2>
 
-        <input type="text" id="email" class="form-control mb-3" placeholder="Email">
+        <h2>
+
+            <i class="bi bi-person-fill"></i>
+            Login
+
+        </h2>
+
+        <!-- EMAIL -->
+
+        <div class="input-group mb-3">
+
+            <span class="input-group-text">
+
+                <i class="bi bi-envelope-fill"></i>
+
+            </span>
+
+            <input type="text"
+                   id="email"
+                   class="form-control"
+                   placeholder="Email">
+
+        </div>
+
+        <!-- SENHA -->
 
         <div class="password-box mb-3">
-            <input type="password" id="senha" class="form-control" placeholder="Senha">
-            <span class="show-pass" onclick="toggleSenha()">👁</span>
+
+            <span class="input-icon">
+
+                <i class="bi bi-lock-fill"></i>
+
+            </span>
+
+            <input type="password"
+                   id="senha"
+                   class="form-control"
+                   placeholder="Senha">
+
+            <span class="show-pass"
+                  onclick="toggleSenha()">
+
+                <i class="bi bi-eye-fill"></i>
+
+            </span>
+
         </div>
 
-        <button class="btn btn-login w-100" onclick="login()">Entrar</button>
+        <!-- BOTÃO -->
+
+        <button class="btn btn-login w-100"
+                onclick="login()">
+
+            <i class="bi bi-box-arrow-in-right"></i>
+            Entrar
+
+        </button>
+
+        <!-- LINKS -->
 
         <div class="links">
-            Não tem conta? <a href="cadastro.html">Criar conta</a>
+
+            Não tem conta?
+
+            <a href="cadastro.html">
+                Criar conta
+            </a>
+
         </div>
+
     </div>
 
     <!-- TOAST -->
-    <div class="position-fixed bottom-0 end-0 p-3">
-        <div id="toast" class="toast text-bg-warning">
-            <div class="toast-body"></div>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+
+        <div id="toast"
+             class="toast border-0 text-white">
+
+            <div class="d-flex">
+
+                <div class="toast-body"></div>
+
+                <button type="button"
+                        class="btn-close btn-close-white me-2 m-auto"
+                        data-bs-dismiss="toast">
+                </button>
+
+            </div>
+
         </div>
+
     </div>
 
-    <script defer>
-        function toast(msg) {
+    <!-- SCRIPTS -->
+
+    <script>
+
+        /* TOAST */
+
+        function toast(msg, tipo = "warning") {
+
             const t = document.getElementById("toast");
-            t.querySelector(".toast-body").innerText = msg;
+
+            const body = t.querySelector(".toast-body");
+
+            t.className = "toast border-0 text-white";
+
+            if (tipo === "success") {
+
+                t.classList.add("bg-success");
+
+            } else if (tipo === "error") {
+
+                t.classList.add("bg-danger");
+
+            } else {
+
+                t.classList.add("bg-warning");
+
+                t.classList.remove("text-white");
+
+                t.classList.add("text-dark");
+            }
+
+            body.innerHTML = msg;
+
             new bootstrap.Toast(t).show();
         }
 
+        /* MOSTRAR SENHA */
+
         function toggleSenha() {
+
             const input = document.getElementById("senha");
-            input.type = input.type === "password" ? "text" : "password";
+
+            const icon = document.querySelector(".show-pass i");
+
+            if (input.type === "password") {
+
+                input.type = "text";
+
+                icon.className = "bi bi-eye-slash-fill";
+
+            } else {
+
+                input.type = "password";
+
+                icon.className = "bi bi-eye-fill";
+            }
         }
+
+        /* LOGIN */
 
         async function login() {
-            const email = document.getElementById("email").value;
-            const senha = document.getElementById("senha").value;
+
+            const email =
+                document.getElementById("email")
+                    .value
+                    .trim();
+
+            const senha =
+                document.getElementById("senha")
+                    .value;
+
+            /* VALIDAÇÃO */
 
             if (!email || !senha) {
-                toast("Preencha os campos");
+
+                toast(
+                    '<i class="bi bi-exclamation-triangle-fill"></i> Preencha os campos',
+                    'warning'
+                );
+
                 return;
             }
 
-            const res = await fetch("https://localhost:7200/api/usuario/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ Email: email, Senha: senha })
-            });
+            try {
 
-            if (!res.ok) {
-                toast("Login inválido");
-                return;
-            }
+                const res = await fetch(
+                    "https://localhost:7200/api/usuario/login",
+                    {
+                        method: "POST",
 
-            let data = {}; try {   data = await res.json();} catch {}
-            localStorage.setItem("token", data.token);
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
 
-            toast("Login realizado!");
+                        body: JSON.stringify({
 
-            setTimeout(() => {
+                            Email: email,
 
-                const payload = JSON.parse(atob(data.token.split(".")[1]));
-                const perfil = payload.role;
+                            Senha: senha
+                        })
+                    }
+                );
 
-                if (perfil === "SUPERADM") {
-                    window.location.href = "superadmin.html";
-                } else if (perfil === "ADM") {
-                    window.location.href = "admin.html";
-                } else if (perfil === "FUNCIONARIO") {
-                    window.location.href = "funcionario.html";
-                } else {
-                    window.location.href = "index.html";
+                if (!res.ok) {
+
+                    toast(
+                        '<i class="bi bi-x-circle-fill"></i> Login inválido',
+                        'error'
+                    );
+
+                    return;
                 }
 
-            }, 800);
+                let data = {};
+
+                try {
+
+                    data = await res.json();
+
+                } catch { }
+
+                localStorage.setItem(
+                    "token",
+                    data.token
+                );
+
+                toast(
+                    '<i class="bi bi-check-circle-fill"></i> Login realizado!',
+                    'success'
+                );
+
+                setTimeout(() => {
+
+                    const payload = JSON.parse(
+                        atob(data.token.split(".")[1])
+                    );
+
+                    const perfil = payload.role;
+
+                    if (perfil === "SUPERADM") {
+
+                        window.location.href =
+                            "superadmin.html";
+
+                    } else if (perfil === "ADM") {
+
+                        window.location.href =
+                            "admin.html";
+
+                    } else if (perfil === "FUNCIONARIO") {
+
+                        window.location.href =
+                            "funcionario.html";
+
+                    } else {
+
+                        window.location.href =
+                            "index.html";
+                    }
+
+                }, 1000);
+
+            } catch {
+
+                toast(
+                    '<i class="bi bi-wifi-off"></i> Erro na API',
+                    'error'
+                );
+            }
         }
+
     </script>
+
+    <!-- BOOTSTRAP JS -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
+
 </html>

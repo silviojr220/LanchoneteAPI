@@ -10,12 +10,12 @@ public class Produto
     public string Nome { get; set; }
 
     [Required]
-    public string Tipo { get; set; }
+    public string Tipo { get; set; } //Lanhe ou Bebida
 
     [Range(0.01, 1000, ErrorMessage = "Preço inválido")]
     public decimal Preco { get; set; }
 
     public string Descricao { get; set; }
 
-    public string ImagemUrl { get; set; }
+    public string? ImagemUrl { get; set; }
 }

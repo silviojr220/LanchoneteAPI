@@ -10,6 +10,43 @@ let quantidadeAtual = 1;
 carregarUsuario();
 carregarProdutos();
 
+
+/* TOAST */
+
+function mostrarToast(mensagem, tipo = "success") {
+
+    const toast = document.getElementById("toast");
+
+    const toastBody = document.getElementById("toastBody");
+
+    toast.className = "toast border-0 text-white";
+
+    if (tipo === "success") {
+
+        toast.classList.add("bg-success");
+
+    } else if (tipo === "error") {
+
+        toast.classList.add("bg-danger");
+
+    } else if (tipo === "warning") {
+
+        toast.classList.add("bg-warning");
+        toast.classList.remove("text-white");
+        toast.classList.add("text-dark");
+
+    } else {
+
+        toast.classList.add("bg-primary");
+    }
+
+    toastBody.innerHTML = mensagem;
+
+    const bsToast = new bootstrap.Toast(toast);
+
+    bsToast.show();
+}
+
 /* SIDEBAR */
 
 function toggleSidebar() {
@@ -349,36 +386,55 @@ async function finalizarPedido() {
 
     if (carrinho.length === 0) {
 
-        alert("Carrinho vazio");
+        mostrarToast(
+            '<i class="bi bi-cart-x-fill"></i> Carrinho vazio',
+            'warning'
+        );
 
         return;
     }
 
-    const res = await fetch(`${api}/pedido`, {
+    try {
 
-        method: "POST",
+        const res = await fetch(`${api}/pedido`, {
 
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token
-        },
+            method: "POST",
 
-        body: JSON.stringify({
-            itens: carrinho
-        })
-    });
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
 
-    if (res.ok) {
+            body: JSON.stringify({
+                itens: carrinho
+            })
+        });
 
-        alert("Pedido realizado!");
+        if (res.ok) {
 
-        carrinho = [];
+            mostrarToast(
+                '<i class="bi bi-check-circle-fill"></i> Pedido realizado com sucesso!',
+                'success'
+            );
 
-        renderCarrinho();
+            carrinho = [];
 
-    } else {
+            renderCarrinho();
 
-        alert("Erro ao finalizar");
+        } else {
+
+            mostrarToast(
+                '<i class="bi bi-x-circle-fill"></i> Erro ao finalizar pedido',
+                'error'
+            );
+        }
+
+    } catch {
+
+        mostrarToast(
+            '<i class="bi bi-wifi-off"></i> Erro de conexão com servidor',
+            'error'
+        );
     }
 }
 

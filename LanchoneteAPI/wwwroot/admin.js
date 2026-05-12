@@ -40,36 +40,50 @@ async function carregarProdutos() {
 
     produtos.forEach(p => {
         tbody.innerHTML += `
-            <tr>
-                <td><strong>${p.nome}</strong></td>
+    <tr>
 
-                <td>
-                    <span class="badge bg-dark">
-                        ${p.tipo}
-                    </span>
-                </td>
+        <td>
+            <strong>${p.nome}</strong>
+        </td>
 
-                <td>
-                    R$ ${Number(p.preco).toFixed(2)}
-                </td>
+        <td>
+            <span class="badge bg-dark">
+                ${p.tipo}
+            </span>
+        </td>
 
-                <td>
+        <td>
+            R$ ${Number(p.preco).toFixed(2)}
+        </td>
 
-                    <button class="btn btn-sm btn-warning"
-                        onclick="editarProduto(${p.id}, '${p.nome}', '${p.tipo}', ${p.preco})">
+        <td>
+            ${p.descricao || "-"}
+        </td>
 
-                        ✏️
-                    </button>
+        <td>
 
-                    <button class="btn btn-sm btn-danger"
-                        onclick="deletar(${p.id})">
+            <button class="btn btn-sm btn-warning"
+                onclick="editarProduto(
+                    ${p.id},
+                    '${p.nome}',
+                    '${p.tipo}',
+                    ${p.preco},
+                    \`${p.descricao || ""}\`
+                )">
 
-                        🗑
-                    </button>
+                ✏️
+            </button>
 
-                </td>
-            </tr>
-        `;
+            <button class="btn btn-sm btn-danger"
+                onclick="deletar(${p.id})">
+
+                🗑
+            </button>
+
+        </td>
+
+    </tr>
+`;
     });
 }
 
@@ -77,6 +91,7 @@ async function criarProduto() {
     const nome = document.getElementById("nome").value;
     const tipo = document.getElementById("tipo").value;
     const preco = parseFloat(document.getElementById("preco").value);
+    const descricao = document.getElementById("descricao").value;
 
     if (!nome || !tipo || isNaN(preco)) {
         mostrarToast("Preencha todos os campos!");
@@ -91,7 +106,7 @@ async function criarProduto() {
             "Content-Type": "application/json",
             "Authorization": "Bearer " + token
         },
-        body: JSON.stringify({ nome, tipo, preco })
+        body: JSON.stringify({ nome, tipo, preco, descricao })
     });
 
     if (res.ok) {
@@ -99,17 +114,19 @@ async function criarProduto() {
         document.getElementById("nome").value = "";
         document.getElementById("tipo").value = "";
         document.getElementById("preco").value = "";
+        document.getElementById("descricao").value = "";
         carregarProdutos();
     } else {
         mostrarToast("Erro ao criar produto");
     }
 }
 
-function editarProduto(id, nomeAtual, tipoAtual, precoAtual) {
+function editarProduto(id, nomeAtual, tipoAtual, precoAtual, descricaoAtual) {
     // Preenche o formulário com os dados atuais
     document.getElementById("nome").value = nomeAtual;
     document.getElementById("tipo").value = tipoAtual;
     document.getElementById("preco").value = precoAtual;
+    document.getElementById("descricao").value = descricaoAtual;
 
     // Troca o botão Cadastrar por Salvar
     const btn = document.getElementById("btnProduto");
@@ -121,6 +138,7 @@ async function salvarEdicao(id) {
     const nome = document.getElementById("nome").value;
     const tipo = document.getElementById("tipo").value;
     const preco = parseFloat(document.getElementById("preco").value);
+    const descricao = document.getElementById("descricao").value;
 
     const token = localStorage.getItem("token");
 
@@ -130,7 +148,7 @@ async function salvarEdicao(id) {
             "Content-Type": "application/json",
             "Authorization": "Bearer " + token
         },
-        body: JSON.stringify({ nome, tipo, preco })
+        body: JSON.stringify({ nome, tipo, preco, descricao })
     });
 
     if (res.ok) {
@@ -144,6 +162,7 @@ async function salvarEdicao(id) {
         document.getElementById("nome").value = "";
         document.getElementById("tipo").value = "";
         document.getElementById("preco").value = "";
+        document.getElementById("descricao").value = "";
 
         carregarProdutos();
     } else {

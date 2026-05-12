@@ -36,7 +36,7 @@ function verificarFuncionario() {
 
 async function carregarProdutos() {
     try {
-        const res = await fetch(`${API}/produto`, { headers: getHeaders() });
+        const res = await fetch(`${api}/produto`, { headers: getHeaders() });
 
         if (res.status === 401) {
             localStorage.removeItem("token");
