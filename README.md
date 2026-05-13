@@ -6,16 +6,17 @@
 
 ## 📑 Índice
 
-- [Requisitos](#-requisitos)
-- [Configuração do Banco de Dados](#️-configuração-do-banco-de-dados)
-- [Como Rodar o Projeto](#-como-rodar-o-projeto)
-- [Recuperação do Banco](#️-recuperação-do-banco-migrations)
-- [Usuário Padrão](#-usuário-padrão-superadm)
-- [Perfis de Usuário](#-perfis-de-usuário)
-- [Autenticação](#-autenticação)
-- [Documentação da API](#-documentação-da-api-swagger)
-- [Estrutura do Projeto](#-estrutura-do-projeto)
-- [Problemas Comuns](#-problemas-comuns)
+* [Requisitos](#-requisitos)
+* [Configuração do Banco de Dados](#️-configuração-do-banco-de-dados)
+* [Como Rodar o Projeto](#-como-rodar-o-projeto)
+* [Recuperação do Banco](#️-recuperação-do-banco-migrations)
+* [Usuário Padrão](#-usuário-padrão-superadm)
+* [Perfis de Usuário](#-perfis-de-usuário)
+* [Autenticação](#-autenticação)
+* [Documentação da API](#-documentação-da-api-swagger)
+* [Estrutura do Projeto](#-estrutura-do-projeto)
+* [Futuras Adições](#-futuras-adições)
+* [Problemas Comuns](#-problemas-comuns)
 
 <br>
 
@@ -25,12 +26,12 @@
 
 Antes de rodar o projeto, certifique-se de ter instalado:
 
-| Ferramenta | Versão recomendada | Obrigatório |
-|---|---|:---:|
-| [.NET SDK](https://dotnet.microsoft.com/download) | 9.0 ou superior | ✅ |
-| [MySQL Server](https://dev.mysql.com/downloads/mysql/) | 8.0 ou superior | ✅ |
-| [Git](https://git-scm.com/) | Qualquer versão recente | ✅ |
-| [MySQL Workbench](https://dev.mysql.com/downloads/workbench/) | Qualquer versão recente | ⬜ opcional |
+| Ferramenta                                                    | Versão recomendada      | Obrigatório |
+| ------------------------------------------------------------- | ----------------------- | :---------: |
+| [.NET SDK](https://dotnet.microsoft.com/download)             | 9.0 ou superior         |      ✅      |
+| [MySQL Server](https://dev.mysql.com/downloads/mysql/)        | 8.0 ou superior         |      ✅      |
+| [Git](https://git-scm.com/)                                   | Qualquer versão recente |      ✅      |
+| [MySQL Workbench](https://dev.mysql.com/downloads/workbench/) | Qualquer versão recente |  ⬜ Opcional |
 
 <br>
 
@@ -85,7 +86,7 @@ dotnet restore
 dotnet ef database update
 ```
 
-> 💡 Esse comando cria todas as tabelas automaticamente, na ordem correta. Não é necessário rodar nenhum script SQL manualmente.
+> 💡 Esse comando cria todas as tabelas automaticamente, na ordem correta. Não é necessário executar nenhum script SQL manualmente.
 
 Caso o comando `dotnet ef` não seja reconhecido, instale a ferramenta globalmente primeiro:
 
@@ -99,9 +100,9 @@ dotnet tool install --global dotnet-ef
 dotnet run
 ```
 
-A porta exata depende do seu `launchSettings.json` (pasta `Properties/`). Por padrão o projeto costuma subir em:
+A porta exata depende do seu `launchSettings.json` (pasta `Properties/`). Por padrão, o projeto costuma iniciar em:
 
-```
+```txt
 http://localhost:5000
 https://localhost:7200
 ```
@@ -114,27 +115,30 @@ Verifique o arquivo caso a aplicação não abra nessas portas. O **frontend é 
 
 ## 🗄️ Recuperação do Banco (Migrations)
 
-As migrations estão versionadas no projeto e representam o histórico completo do banco:
+As migrations estão versionadas no projeto e representam o histórico completo do banco de dados:
 
-| # | Migration | O que faz |
-|:---:|---|---|
-| 1 | `InitialCreate` | Cria as tabelas `Produtos`, `Pedidos`, `ItensPedido` e `Usuarios` |
-| 2 | `AdicionarTelefone` | Adiciona o campo `Telefone` na tabela `Usuarios` |
-| 3 | `AddStatusPedido` | Adiciona `Status` e `DataCriacao` na tabela `Pedidos` |
-| 4 | `AddImagemDescricao` | Adiciona `Imagem` e `Descricao` na tabela `Produtos` |
-| 5 | `UptadeDescricao` | Torna `ImagemUrl` opcional (nullable) |
+|  #  | Migration            | O que faz                                                         |
+| :-: | -------------------- | ----------------------------------------------------------------- |
+|  1  | `InitialCreate`      | Cria as tabelas `Produtos`, `Pedidos`, `ItensPedido` e `Usuarios` |
+|  2  | `AdicionarTelefone`  | Adiciona o campo `Telefone` na tabela `Usuarios`                  |
+|  3  | `AddStatusPedido`    | Adiciona os campos `Status` e `DataCriacao` na tabela `Pedidos`   |
+|  4  | `AddImagemDescricao` | Adiciona os campos `Imagem` e `Descricao` na tabela `Produtos`    |
+|  5  | `UpdateDescricao`    | Torna `ImagemUrl` opcional (`nullable`)                           |
 
-**Aplicar todas as migrations de uma vez:**
+### Aplicar todas as migrations de uma vez
+
 ```bash
 dotnet ef database update
 ```
 
-**Voltar para uma migration específica:**
+### Voltar para uma migration específica
+
 ```bash
 dotnet ef database update NomeDaMigration
 ```
 
-**Remover o banco e recriar do zero:**
+### Remover o banco e recriar do zero
+
 ```bash
 dotnet ef database drop
 dotnet ef database update
@@ -148,13 +152,13 @@ dotnet ef database update
 
 Ao iniciar a aplicação pela **primeira vez**, um usuário administrador master é criado automaticamente:
 
-| Campo | Valor |
-|---|---|
-| 📧 Email | `admin@gmail.com` |
-| 🔑 Senha | `adm123` |
-| 👑 Perfil | `SUPERADM` |
+| Campo     | Valor             |
+| --------- | ----------------- |
+| 📧 Email  | `admin@gmail.com` |
+| 🔑 Senha  | `adm123`          |
+| 👑 Perfil | `SUPERADM`        |
 
-> ⚠️ **Recomendado:** troque a senha imediatamente após o primeiro acesso.
+> ⚠️ **Recomendado:** altere a senha imediatamente após o primeiro acesso.
 
 <br>
 
@@ -164,12 +168,12 @@ Ao iniciar a aplicação pela **primeira vez**, um usuário administrador master
 
 O sistema possui quatro níveis de acesso:
 
-| Perfil | Descrição |
-|---|---|
-| 👑 `SUPERADM` | Gerencia ADMs, funcionários e clientes. Acessa todos os pedidos. |
-| 🛠️ `ADM` | Gerencia produtos e visualiza pedidos. |
-| 🧑‍💼 `FUNCIONARIO` | Visualiza cardápio e pedidos, confirma preparo. |
-| 🙋 `CLIENTE` | Monta e finaliza pedidos pelo cardápio. |
+| Perfil              | Descrição                                                                            |
+| ------------------- | ------------------------------------------------------------------------------------ |
+| 👑 `SUPERADM`       | Gerencia administradores, funcionários e clientes. Possui acesso a todos os pedidos. |
+| 🛠️ `ADM`           | Gerencia produtos e visualiza pedidos.                                               |
+| 🧑‍💼 `FUNCIONARIO` | Visualiza o cardápio e os pedidos, além de confirmar preparos.                       |
+| 🙋 `CLIENTE`        | Monta e finaliza pedidos pelo cardápio.                                              |
 
 <br>
 
@@ -179,7 +183,7 @@ O sistema possui quatro níveis de acesso:
 
 O sistema utiliza **JWT Bearer Token**. Após realizar o login, inclua o token retornado no header de todas as requisições protegidas:
 
-```
+```txt
 Authorization: Bearer {seu_token}
 ```
 
@@ -193,7 +197,7 @@ Authorization: Bearer {seu_token}
 
 Com a aplicação rodando, acesse a documentação interativa no navegador:
 
-```
+```txt
 {sua-url-local}/swagger
 ```
 
@@ -205,7 +209,7 @@ Com a aplicação rodando, acesse a documentação interativa no navegador:
 
 ## 📁 Estrutura do Projeto
 
-```
+```txt
 LanchoneteAPI/
 │
 ├── Controllers/        # Endpoints da API (rotas e respostas HTTP)
@@ -215,9 +219,46 @@ LanchoneteAPI/
 ├── Models/             # Entidades mapeadas para o banco
 ├── Repositories/       # Camada de acesso a dados
 ├── Services/           # Regras de negócio
-├── wwwroot/            # Frontend estático (HTML, CSS, JS)
+├── wwwroot/            # Frontend estático (HTML, CSS e JS)
 │
 └── appsettings.json    # Configurações gerais da aplicação
+```
+
+<br>
+
+---
+
+## 🚧 Futuras Adições
+
+### 👤 Usuário
+
+```txt
+Implementação de carrossel automático na tela principal.
+Implementação de uma tela específica do usuário, exibindo suas respectivas informações.
+Criação do status "Premium" para usuários específicos.
+```
+
+### 👑 Super Admin
+
+```txt
+Atualização do front-end.
+Permitir acesso à tela de criação de produtos.
+Implementação de um melhor gerenciamento de administradores e funcionários.
+```
+
+### 🛠️ Admin
+
+```txt
+Botão para indicar que o produto não está disponível (atualizando para os funcionários).
+Adição de campo para inserção de imagens dos produtos.
+Possibilidade de marcar pedidos específicos com urgência.
+```
+
+### 🧑‍💼 Funcionário
+
+```txt
+Atualização do front-end.
+Implementação de um sistema de prioridade em produtos, consistindo em uma seção exclusiva para isso.
 ```
 
 <br>
@@ -254,9 +295,9 @@ Abra o arquivo `Properties/launchSettings.json` e altere o número da porta nos 
 <details>
 <summary><strong>Token inválido ou acesso negado (401/403)</strong></summary>
 
-- Verifique se está enviando o header `Authorization: Bearer {token}` corretamente.
-- Confirme se o token não expirou (validade de 2 horas).
-- Certifique-se de que o perfil do usuário tem permissão para acessar o endpoint.
+* Verifique se está enviando o header `Authorization: Bearer {token}` corretamente.
+* Confirme se o token não expirou (validade de 2 horas).
+* Certifique-se de que o perfil do usuário possui permissão para acessar o endpoint.
 
 </details>
 
@@ -265,5 +306,5 @@ Abra o arquivo `Properties/launchSettings.json` e altere o número da porta nos 
 ---
 
 <p align="center">
-  Desenvolvido com ☕ e 🍔
+  Desenvolvido por Silvio Cláudio Junior
 </p>
